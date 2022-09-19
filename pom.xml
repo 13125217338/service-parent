@@ -4,14 +4,15 @@
   <artifactId>service-parent</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.version>1.0.0-SNAPSHOT</project.version>
     
     <!-- spring -->
     <spring.boot-plug-version>2.6.6</spring.boot-plug-version>
-    <spring.boot.version>2.2.8.RELEASE</spring.boot.version>
+    <spring.boot.version>2.4.4</spring.boot.version>
+    <spring.cloud.bootstrap.version>3.1.4</spring.cloud.bootstrap.version>
     
     <!-- alibaba -->
     <alibaba.cloud.version>2021.1</alibaba.cloud.version>
@@ -29,15 +30,19 @@
     <lombok-version>1.18.24</lombok-version>
     
     <!-- redis -->
-    <redis-version>3.16.2</redis-version>
+    <redis-version>3.16.8</redis-version>
     
     <!-- kaptcha -->
     <kaptcha.version>2.3.2</kaptcha.version>
+    
+    <!-- commons-net -->
+    <commons-net.version>3.6</commons-net.version>
   </properties>
 
   <dependencyManagement>
   	<dependencies>
   		<!-- user.code -->
+  		<!-- common -->
   		<dependency>
   			<groupId>org.city</groupId>
   			<artifactId>service-common-api</artifactId>
@@ -49,11 +54,11 @@
   			<version>${project.version}</version>
   		</dependency>
   		<dependency>
-  			<groupId>org.city</groupId>
-  			<artifactId>service-common-support</artifactId>
-  			<version>${project.version}</version>
-  		</dependency>
-  		
+	  		<groupId>org.city</groupId>
+	  		<artifactId>service-common-support</artifactId>
+	  		<version>${project.version}</version>
+	  	</dependency>
+  	
   		<!-- spring -->
   		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -61,6 +66,11 @@
 			<version>${spring.boot.version}</version>
 			<type>pom</type>
 			<scope>import</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-bootstrap</artifactId>
+			<version>${spring.cloud.bootstrap.version}</version>
 		</dependency>
 		
   		<!-- alibaba -->
@@ -121,6 +131,13 @@
 	    	<artifactId>kaptcha</artifactId>
 	    	<version>${kaptcha.version}</version>
 	    </dependency>
+	    
+	    <!-- commons-net -->
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>${commons-net.version}</version>
+        </dependency>
   	</dependencies>
   </dependencyManagement>
   
