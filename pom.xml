@@ -10,14 +10,13 @@
     <project.version>1.0.0-SNAPSHOT</project.version>
     
     <!-- spring -->
-    <spring.boot-plug-version>2.6.6</spring.boot-plug-version>
-    <spring.boot.version>2.2.8.RELEASE</spring.boot.version>
+    <spring.boot.version>2.7.2</spring.boot.version>
+    <spring.cloud.bootstrap.version>3.1.4</spring.cloud.bootstrap.version>
     
     <!-- alibaba -->
-    <alibaba.cloud.version>2021.1</alibaba.cloud.version>
+    <alibaba.cloud.version>2021.0.5.0</alibaba.cloud.version>
     <alibaba.druid.version>1.1.21</alibaba.druid.version>
-    <fastjson.version>1.2.83</fastjson.version>
-    <easyexcel.version>3.1.1</easyexcel.version>
+    <fastjson.version>1.2.83_noneautotype</fastjson.version>
     
     <!-- mybatis -->
     <mybatis.version>2.2.2</mybatis.version>
@@ -25,19 +24,22 @@
     <!-- mysql -->
     <mysql.version>8.0.20</mysql.version>
     
+    <!-- clickhouse -->
+    <clickhouse.version>0.3.1-patch</clickhouse.version>
+    
     <!-- lombok -->
-    <lombok-version>1.18.24</lombok-version>
+    <lombok.version>1.18.24</lombok.version>
     
-    <!-- redis -->
-    <redis-version>3.16.2</redis-version>
+    <!-- redisson -->
+    <redisson.version>3.18.0</redisson.version>
     
-    <!-- kaptcha -->
-    <kaptcha.version>2.3.2</kaptcha.version>
+    <!-- commons -->
+    <commons.net.version>3.6</commons.net.version>
   </properties>
-
+  
   <dependencyManagement>
   	<dependencies>
-  		<!-- user.code -->
+  		<!-- common -->
   		<dependency>
   			<groupId>org.city</groupId>
   			<artifactId>service-common-api</artifactId>
@@ -50,9 +52,19 @@
   		</dependency>
   		<dependency>
   			<groupId>org.city</groupId>
-  			<artifactId>service-common-support</artifactId>
+  			<artifactId>service-common-mysql</artifactId>
   			<version>${project.version}</version>
   		</dependency>
+  		<dependency>
+  			<groupId>org.city</groupId>
+  			<artifactId>service-common-clickhouse</artifactId>
+  			<version>${project.version}</version>
+  		</dependency>
+  		<dependency>
+	  		<groupId>org.city</groupId>
+	  		<artifactId>service-common-support</artifactId>
+	  		<version>${project.version}</version>
+	  	</dependency>
   		
   		<!-- spring -->
   		<dependency>
@@ -61,6 +73,11 @@
 			<version>${spring.boot.version}</version>
 			<type>pom</type>
 			<scope>import</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-bootstrap</artifactId>
+			<version>${spring.cloud.bootstrap.version}</version>
 		</dependency>
 		
   		<!-- alibaba -->
@@ -74,11 +91,6 @@
   			<artifactId>fastjson</artifactId>
   			<version>${fastjson.version}</version>
   		</dependency>
-  		<dependency>
-	  		<groupId>com.alibaba</groupId>
-	  		<artifactId>easyexcel</artifactId>
-	  		<version>${easyexcel.version}</version>
-	  	</dependency>
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-alibaba-dependencies</artifactId>
@@ -101,26 +113,33 @@
 	        <version>${mysql.version}</version>
 	    </dependency>
 	    
+	    <!-- clickhouse -->
+	    <dependency>
+	        <groupId>ru.yandex.clickhouse</groupId>
+	        <artifactId>clickhouse-jdbc</artifactId>
+	        <version>${clickhouse.version}</version>
+	    </dependency>
+	    
 	    <!-- lombok -->
   		<dependency>
 	    	<groupId>org.projectlombok</groupId>
 		    <artifactId>lombok</artifactId>
-		    <version>${lombok-version}</version>
+		    <version>${lombok.version}</version>
 	    </dependency>
 	    
-	    <!-- redis -->
+	    <!-- redisson -->
 	    <dependency>
 	  		<groupId>org.redisson</groupId>
 	  		<artifactId>redisson-spring-boot-starter</artifactId>
-	  		<version>${redis-version}</version>
+	  		<version>${redisson.version}</version>
 	  	</dependency>
-	  	
-	  	<!-- kaptcha -->
-	  	<dependency>
-	    	<groupId>com.github.penggle</groupId>
-	    	<artifactId>kaptcha</artifactId>
-	    	<version>${kaptcha.version}</version>
-	    </dependency>
+	    
+	    <!-- commons -->
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>${commons.net.version}</version>
+        </dependency>
   	</dependencies>
   </dependencyManagement>
   
@@ -133,11 +152,11 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.2</version>
                 <configuration>
-                    <excludes>
-                        <!--不打包资源文件-->
-                        <exclude>bootstrap.yml</exclude>
-                        <exclude>config/</exclude>
-                    </excludes>
+                    <includes>
+                    	<include>**/*.class</include>
+                    	<include>**/mapper/**/*.xml</include>
+                    	<include>META-INF/**</include>
+                    </includes>
                     <archive>
                         <!--MANIFEST.MF信息完善-->
                         <manifest>
@@ -155,7 +174,7 @@
                     <outputDirectory>${project.build.directory}/package/bin</outputDirectory>
                 </configuration>
             </plugin>
-
+			
             <!--拷贝依赖jar包 copy-dependencies-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -168,13 +187,14 @@
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
+                        <!-- 打包时生效 -->
                         <configuration>
-                            <outputDirectory>${project.build.directory}/package/lib</outputDirectory>
-                        </configuration>
+		                    <outputDirectory>${project.build.directory}/package/lib</outputDirectory>
+		                </configuration>
                     </execution>
                 </executions>
             </plugin>
-
+			
             <!--拷贝配置文件 copy-resources-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -187,71 +207,67 @@
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
+                        <!-- 打包时生效 -->
                         <configuration>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/resources</directory>
-                                </resource>
-                            </resources>
-                            <outputDirectory>${project.build.directory}/package</outputDirectory>
-                        </configuration>
+		                    <resources>
+		                        <resource>
+		                            <directory>src/main/resources</directory>
+		                        </resource>
+		                    </resources>
+		                    <outputDirectory>${project.build.directory}/package</outputDirectory>
+		                </configuration>
                     </execution>
                 </executions>
             </plugin>
-
+            
             <!--spring boot repackage，依赖 maven-jar-plugin打包的jar包 重新打包成 spring boot 的jar包-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.7.2</version>
-                <configuration>
-                    <!--重写包含依赖，包含不存在的依赖，jar里没有pom里的依赖-->
-                    <includes>
-                        <include>
-                            <groupId>null</groupId>
-                            <artifactId>null</artifactId>
-                        </include>
-                    </includes>
-                    <outputDirectory>${project.build.directory}/package/bin</outputDirectory>
-                </configuration>
-                <extensions>true</extensions>
                 <executions>
                     <execution>
-                        <id>build</id>
-                        <goals>
-                            <goal>build-info</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>repackage</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>repackage</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- lib 文件夹压缩打包 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.4.1</version>
-                <configuration>
-                    <finalName>${project.artifactId}-libs</finalName>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
+                        <!-- 打包时生效 -->
+                        <configuration>
+		                	<executable>true</executable>
+		                	<layout>ZIP</layout>
+		                	<!--nothing将所有依赖都不要打进jar包-->
+		                	<includes>
+		                		<include>
+		                			<groupId>nothing</groupId>
+		                			<artifactId>nothing</artifactId>
+		                		</include>
+		                	</includes>
+		                    <outputDirectory>${project.build.directory}/package/bin</outputDirectory>
+		                </configuration>
                     </execution>
                 </executions>
             </plugin>
       </plugins>
     </pluginManagement>
   </build>
+  
+  <!-- 指定JDK版本 -->
+  <profiles>
+	<profile>
+		<id>jdk11</id>
+		<activation>
+			<activeByDefault>true</activeByDefault>
+			<jdk>11</jdk>
+		</activation>
+		<properties>
+			<maven.compiler.source>11</maven.compiler.source>
+			<maven.compiler.target>11</maven.compiler.target>
+			<maven.compiler.compilerVersion>11</maven.compiler.compilerVersion>
+			<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		</properties>
+	</profile>
+  </profiles>
   
   <!-- 指定仓库 -->
   <repositories>
