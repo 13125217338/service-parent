@@ -58,6 +58,23 @@
 	  		<artifactId>service-common-support</artifactId>
 	  		<version>${project.version}</version>
 	  	</dependency>
+	  	
+	  	<!-- handler -->
+	  	<dependency>
+	  		<groupId>com.huidihao</groupId>
+	  		<artifactId>look-handler-api</artifactId>
+	  		<version>${project.version}</version>
+	  	</dependency>
+	  	<dependency>
+	  		<groupId>com.huidihao</groupId>
+	  		<artifactId>look-handler-core</artifactId>
+	  		<version>${project.version}</version>
+	  	</dependency>
+	  	<dependency>
+	  		<groupId>com.huidihao</groupId>
+	  		<artifactId>look-handler-html</artifactId>
+	  		<version>${project.version}</version>
+	  	</dependency>
   	
   		<!-- spring -->
   		<dependency>
